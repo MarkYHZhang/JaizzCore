@@ -22,12 +22,12 @@ public class Jaizz {
         String GPiano = "C3 Db3 D3 F3 G3 Bb3 C4 Db4 D4 F4 G4 Bb4 C5 Db5 D5 F5 G5 Bb5 C6 Db6 D6 F6 G6";
         String GClarinet = "E4 G4 A4 C5 D5 Eb5 E5 G5 A5 C6 D6 Eb6";
         String GTrumpet = "C4 D4 Eb4 E4 G4 A4 C5 D5 Eb5 E5 G5 A5 C6 D6 Eb6 E6 G6 A6";
-        String GSax = "D4 E4 G4 A4 Bb4 B4 D5 E5 G5 A5 Bb5 B5 D6 E6 G6 A6 Bb6 B6";
+        String GSax = "D4 E4 G4 A4 Bb4 B4 D5 E5 G5 A5 Bb5 B5";
 
         String APiano = "C3 D3 Eb3 E3 G3 A3 C4 D4 Eb4 E4 G4 A4 C5 D5 Eb5 E5 G5 A5 C6 D6 Eb6 E6 G6 A6";
         String AClarinet = "F#4 A4 B4 D5 E5 F5 F#5 A5 B5 D6 E6 F6";
         String ATrumpet = "B3 D4 E4 F4 F#4 A4 B4 D5 E5 F5 F#5 A5 B5 D6 E6 F6 F#6 A6 B6";
-        String ASax = "C4 C#4 E4 F#4 A4 B4 C5 C#5 E5 F#5 A5 B5 C6 C#6 E6 F#6 A6 B6";
+        String ASax = "C4 C#4 E4 F#4 A4 B4 C5 C#5 E5 F#5 A5 B5";
 
         String patternstr = "16\n" +
                 "4\n" +
@@ -132,6 +132,7 @@ public class Jaizz {
         else if (lengthIn.equalsIgnoreCase("medium")) length=70;
         else if (lengthIn.equalsIgnoreCase("long")) length=150;
 
+        System.out.println("Generating music...");
         String music = "", parsedMusic = "";
         for (int i = 0; i < length; i++) {
             int patternLoc = Utils.randomInt(0,patterns.size()-1);
@@ -240,6 +241,7 @@ public class Jaizz {
                 }
             }
         }
+        System.out.println("Finished music generation");
 
         WavCompiler.Key k = WavCompiler.Key.G;
         String speed = "T";
@@ -258,10 +260,14 @@ public class Jaizz {
             k = WavCompiler.Key.AF;
         }
 
+        System.out.println("Starting music compiling process...");
         WavCompiler.convert(k, p.getSequence("I["+args[1]+"] "+speed+" "+music), args[3]);
+        System.out.println("Finished music compiling process");
+
+        System.out.println("Parsing lilypond music note format");
         File dir = new File(System.getProperty("user.dir")+"/views/audio/");
         File f = new File(System.getProperty("user.dir")+"/views/audio/"+args[3]+".txt");
-        dir.mkdirs();
+        dir.mkdirs(); dir.mkdir();
         PrintWriter pw = new PrintWriter(f);
         pw.println("\\version \"2.18.2\"");
         pw.println("{");
@@ -270,6 +276,8 @@ public class Jaizz {
         pw.println(parsedMusic);
         pw.println("}");
         pw.close();
+        System.out.println("Finished parsing.");
+        System.out.println("Completed!");
     }
 
 }

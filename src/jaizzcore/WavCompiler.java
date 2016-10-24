@@ -39,6 +39,8 @@ public class WavCompiler {
 
     public static void convert(Key key, Sequence sequence, String audio_name) {
         try {
+
+            System.out.println("Compiling solo wav...");
             AudioSynthesizer synth = findAudioSynthesizer();
             AudioInputStream stream = synth.openStream(null, null);
             double total = send(sequence, synth.getReceiver());
@@ -46,7 +48,9 @@ public class WavCompiler {
             stream = new AudioInputStream(stream, stream.getFormat(), len);
             AudioSystem.write(stream, AudioFileFormat.Type.WAVE, new File(System.getProperty("user.dir")+"/views/audio/SOLO_"+audio_name+".wav"));
             synth.close();
+            System.out.println("Finished compiling solo wav");
 
+            System.out.println("Mixing solo wav with backing tack wav...");
             byte[] solo = Utils.getBytesFromWav(System.getProperty("user.dir")+"/views/audio/SOLO_"+audio_name+".wav");
             byte[] backing = Utils.getBytesFromWav(key.toString()+".wav");
             byte[] b = Utils.mixBuffers(solo,backing);
@@ -54,7 +58,9 @@ public class WavCompiler {
             AudioInputStream ais = new AudioInputStream(byteInput, new AudioFormat(44100, 16, 2, true, false), b.length);
             File out = new File(System.getProperty("user.dir")+"/views/audio/"+audio_name+".wav");
             AudioSystem.write(ais, AudioFileFormat.Type.WAVE, out);
+            System.out.println("Finished mixing wavs");
 
+            System.out.println("Transcoding wav to mp3...");
             File target = new File(System.getProperty("user.dir")+"/views/audio/"+audio_name+".mp3");
             AudioAttributes audio = new AudioAttributes();
             audio.setCodec("libmp3lame");
@@ -66,6 +72,7 @@ public class WavCompiler {
             attrs.setAudioAttributes(audio);
             Encoder encoder = new Encoder();
             encoder.encode(out, target, attrs);
+            System.out.println("Finished transcoding.");
 
         } catch (Exception e) {
             e.printStackTrace();
